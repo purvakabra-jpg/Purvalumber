@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumber 401(k) Report Prototype</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --surface:#ffffff;
+      --line:#e5e7eb;
+      --text:#111827;
+      --muted:#6b7280;
+      --primary:#2563eb;
+      --primary-2:#1d4ed8;
+      --success:#059669;
+      --warn:#d97706;
+      --danger:#dc2626;
+      --nav:#1f2937;
+      --chip:#ecfdf5;
+      --shadow:0 10px 24px rgba(15,23,42,.08);
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .topbar{
+      height:56px;
+      background:var(--nav);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 20px;
+      position:sticky;
+      top:0;
+      z-index:30;
+    }
+    .brand{font-weight:700; letter-spacing:.2px}
+    .topnav{display:flex; gap:18px; font-size:14px; opacity:.92}
+    .app{
+      display:grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 56px);
+    }
+    .sidebar{
+      border-right:1px solid var(--line);
+      background:#fbfcfe;
+      padding:18px 14px;
+    }
+    .side-title{font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:8px 10px 10px}
+    .side-item{
+      padding:10px 12px;
+      border-radius:10px;
+      color:#374151;
+      margin:4px 0;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .side-item.active{background:#e8f0ff;color:#0f3fa9;font-weight:600}
+    .content{
+      padding:24px;
+      position:relative;
+    }
+    .header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:20px;
+      margin-bottom:16px;
+    }
+    .title h1{margin:0 0 6px 0; font-size:28px}
+    .title p{margin:0; color:var(--muted)}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid #c7f0d8;
+      background:var(--chip);
+      color:#065f46;
+      border-radius:999px;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .controls{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .field, .select, .search{
+      border:1px solid var(--line);
+      background:#fff;
+      height:40px;
+      border-radius:10px;
+      padding:0 12px;
+      font-size:14px;
+      color:#111827;
+    }
+    .field{width:180px}
+    .search{width:260px}
+    .btn{
+      border:1px solid var(--line);
+      background:#fff;
+      color:#111827;
+      height:40px;
+      padding:0 14px;
+      border-radius:10px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .btn.primary{
+      background:var(--primary);
+      border-color:var(--primary);
+      color:#fff;
+    }
+    .btn.primary:hover{background:var(--primary-2)}
+    .btn.ghost{
+      background:#fff;
+      color:#374151;
+    }
+    .btn.warn{
+      background:#fff7ed;
+      border-color:#fed7aa;
+      color:#9a3412;
+    }
+    .toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:20px 0 12px;
+    }
+    .filters{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+    }
+    .table-card{overflow:hidden}
+    .table-wrap{overflow:auto}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:1040px;
+      font-size:14px;
+    }
+    thead th{
+      text-align:left;
+      padding:14px 16px;
+      background:#f8fafc;
+      color:#374151;
+      border-bottom:1px solid var(--line);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      white-space:nowrap;
+    }
+    tbody tr:hover{background:#fafcff}
+    .review-banner{
+      display:none;
+      margin:14px 0 0;
+      padding:12px 14px;
+      border:1px solid #fde68a;
+      background:#fffbeb;
+      color:#92400e;
+      border-radius:12px;
+      font-size:14px;
+    }
+    .review-banner.show{display:block}
+    .sticky-actions{
+      display:none;
+      position:sticky;
+      bottom:16px;
+      margin-top:14px;
+      justify-content:flex-end;
+      gap:10px;
+      padding:10px;
+      z-index:10;
+    }
+    .sticky-actions.show{display:flex}
+    .drawer{
+      position:fixed;
+      top:56px;
+      right:-420px;
+      width:400px;
+      height:calc(100vh - 56px);
+      background:#fff;
+      border-left:1px solid var(--line);
+      box-shadow:var(--shadow);
+      transition:right .22s ease;
+      z-index:40;
+      display:flex;
+      flex-direction:column;
+    }
+    .drawer.show{right:0}
+    .drawer-header{
+      padding:18px 18px 10px;
+      border-bottom:1px solid var(--line);
+    }
+    .drawer-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .drawer-body{
+      padding:16px 18px 22px;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .col-row{
+      display:grid;
+      grid-template-columns: 24px 1fr auto auto;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px 12px;
+    }
+    .icon-btn{
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      color:#4b5563;
+      font-size:16px;
+      padding:4px 6px;
+      border-radius:8px;
+    }
+    .icon-btn:hover{background:#f3f4f6}
+    .add-row{
+      display:grid;
+      grid-template-columns: 1fr 120px auto;
+      gap:10px;
+      padding-top:6px;
+    }
+    .small{font-size:12px; color:var(--muted)}
+    .toast{
+      position:fixed;
+      top:72px;
+      right:20px;
+      min-width:280px;
+      max-width:360px;
+      padding:12px 14px;
+      border-radius:12px;
+      color:#fff;
+      box-shadow:var(--shadow);
+      display:none;
+      z-index:70;
+      font-size:14px;
+    }
+    .toast.show{display:block}
+    .toast.success{background:var(--success)}
+    .toast.error{background:var(--danger)}
+    .toast.warn{background:var(--warn)}
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(17,24,39,.42);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:60;
+      padding:20px;
+    }
+    .modal-backdrop.show{display:flex}
+    .modal{
+      width:min(520px, 100%);
+      background:#fff;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      border:1px solid var(--line);
+      overflow:hidden;
+    }
+    .modal-header, .modal-body, .modal-footer{
+      padding:18px 20px;
+    }
+    .modal-header{border-bottom:1px solid var(--line)}
+    .modal-footer{
+      border-top:1px solid var(--line);
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+    }
+    .meta{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .meta .item{
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:12px;
+      background:#f8fafc;
+    }
+    .duplicate-box{
+      display:none;
+      margin:14px 0;
+      border:1px solid #fed7aa;
+      background:#fff7ed;
+      border-radius:12px;
+      padding:14px;
+    }
+    .duplicate-box.show{display:block}
+    .duplicate-actions{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      margin-top:10px;
+    }
+    .muted-lock{opacity:.45; pointer-events:none}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:#374151;
+    }
+    @media (max-width: 980px){
+      .app{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .content{padding:16px}
+      .header{flex-direction:column}
+      .drawer{width:100%}
+      .search{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">Lumber</div>
+    <div class="topnav">
+      <div>Payroll</div>
+      <div>Reports</div>
+      <div>Compliance</div>
+      <div>Benefits</div>
+    </div>
+  </div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="side-title">Payroll Reports</div>
+      <div class="side-item">Payroll Summary</div>
+      <div class="side-item active">401(k) Report</div>
+      <div class="side-item">Employee Deductions</div>
+      <div class="side-item">Certified Payroll</div>
+      <div class="side-item">Tax Reports</div>
+      <div class="side-title">Quick Actions</div>
+      <div class="side-item">Generate New Report</div>
+      <div class="side-item">Export Center</div>
+    </aside>
+
+    <main class="content">
+      <div id="toastSuccess" class="toast success">Report successfully sent to PayKonnect.</div>
+      <div id="toastError" class="toast error">Failed to send report. Please try again.</div>
+      <div id="toastWarn" class="toast warn">Duplicate report detected.</div>
+
+      <section class="header">
+        <div class="title">
+          <h1>Payroll Reports</h1>
+          <p>Review, adjust, and send your 401(k) report directly to PayKonnect.</p>
+          <div style="margin-top:10px">
+            <span class="badge">PayKonnect Connected</span>
+          </div>
+        </div>
+
+        <div class="controls" id="mainActions">
+          <input id="planNumber" class="field" placeholder="Plan Number" value="PK-401-2471" />
+          <button class="btn" id="downloadBtn">Download Report</button>
+          <button class="btn primary" id="reviewBtn">Review &amp; Send</button>
+        </div>
+      </section>
+
+      <div id="reviewBanner" class="review-banner">
+        Review Mode Active. Verify the report before sending to PayKonnect. Editing is locked in this state.
+      </div>
+
+      <section class="toolbar" id="toolbar">
+        <div class="filters">
+          <select class="select">
+            <option>Current Payroll Cycle</option>
+          </select>
+          <select class="select">
+            <option>All employees</option>
+          </select>
+          <span class="pill">Rows: <strong id="rowCount">8</strong></span>
+        </div>
+
+        <div class="filters" id="editControls">
+          <input class="search" placeholder="Search employees or columns" />
+          <button class="btn" id="editColumnsBtn">Edit Columns</button>
+        </div>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-wrap">
+          <table id="reportTable">
+            <thead>
+              <tr id="theadRow"></tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div id="duplicateBox" class="duplicate-box">
+        <div style="font-weight:700; margin-bottom:4px;">Duplicate report detected</div>
+        <div class="small">This report appears to have already been sent. Rename it and resend.</div>
+        <div class="duplicate-actions">
+          <input id="duplicateName" class="field" style="width:100%" value="401k_report_v2.csv" />
+          <button class="btn warn" id="resendBtn">Resend</button>
+        </div>
+      </div>
+
+      <div id="stickyActions" class="sticky-actions">
+        <button class="btn ghost" id="cancelReviewBtn">Cancel</button>
+        <button class="btn primary" id="sendBtn">Send to PayKonnect</button>
+      </div>
+    </main>
+  </div>
+
+  <aside id="drawer" class="drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <div>
+          <div style="font-weight:700; font-size:18px;">Edit Columns</div>
+          <div class="small">Toggle visibility, rename, reorder, and add columns.</div>
+        </div>
+        <button class="icon-btn" id="closeDrawer">✕</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div style="display:flex; gap:10px;">
+        <input id="columnSearch" class="search" style="width:100%" placeholder="Search columns" />
+        <button class="btn" id="toggleAddColumn">＋</button>
+      </div>
+
+      <div id="addColumnArea" style="display:none;">
+        <div class="add-row">
+          <input id="newColumnName" class="field" style="width:100%" placeholder="New column name" />
+          <input id="newColumnValue" class="field" style="width:100%" value="0" />
+          <button class="btn primary" id="addColumnBtn">Add</button>
+        </div>
+        <div class="small" style="margin-top:6px;">Default value will populate all rows.</div>
+      </div>
+
+      <div id="columnsList"></div>
+    </div>
+  </aside>
+
+  <div id="confirmBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <div style="font-size:18px; font-weight:700;">Confirm Report Submission</div>
+      </div>
+      <div class="modal-body">
+        <div>Are you sure you want to send this 401(k) report to PayKonnect?</div>
+        <div class="meta">
+          <div class="item">
+            <div class="small">Plan Number</div>
+            <div id="modalPlan" style="font-weight:700; margin-top:4px;">PK-401-2471</div>
+          </div>
+          <div class="item">
+            <div class="small">Rows</div>
+            <div id="modalRows" style="font-weight:700; margin-top:4px;">8</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" id="modalCancel">Cancel</button>
+        <button class="btn primary" id="modalConfirm">Confirm &amp; Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      reviewMode: false,
+      sendAttempt: 0,
+      columns: [
+        { key: "employee", label: "Employee Name", visible: true },
+        { key: "employee_id", label: "Employee ID", visible: true },
+        { key: "gross_pay", label: "Gross Pay", visible: true },
+        { key: "employee_401k", label: "Employee 401(k)", visible: true },
+        { key: "employer_match", label: "Employer Match", visible: true },
+        { key: "plan_number", label: "Plan Number", visible: true },
+        { key: "status", label: "Status", visible: true }
+      ],
+      rows: [
+        { employee:"Olivia Carter", employee_id:"E-1042", gross_pay:"$2,450.00", employee_401k:"$122.50", employer_match:"$91.88", plan_number:"PK-401-2471", status:"Ready" },
+        { employee:"Noah Mitchell", employee_id:"E-1048", gross_pay:"$2,120.00", employee_401k:"$106.00", employer_match:"$79.50", plan_number:"PK-401-2471", status:"Ready" },
+        { employee:"Emma Brooks", employee_id:"E-1055", gross_pay:"$2,860.00", employee_401k:"$143.00", employer_match:"$107.25", plan_number:"PK-401-2471", status:"Ready" },
+        { employee:"Liam Turner", employee_id:"E-1061", gross_pay:"$1,980.00", employee_401k:"$99.00", employer_match:"$74.25", plan_number:"PK-401-2471", status:"Ready" },
+        { employee:"Ava Jenkins", employee_id:"E-1073", gross_pay:"$2,670.00", employee_401k:"$133.50", employer_match:"$100.13", plan_number:"PK-401-2471", status:"Ready" },
+        { employee:"Mason Price", employee_id:"E-1084", gross_pay:"$2,330.00", employee_401k:"$116.50", employer_match:"$87.38", plan_number:"PK-401-2471", status:"Ready" },
+        { employee:"Sophia Reed", employee_id:"E-1090", gross_pay:"$2,510.00", employee_401k:"$125.50", employer_match:"$94.13", plan_number:"PK-401-2471", status:"Ready" },
+        { employee:"James Foster", employee_id:"E-1097", gross_pay:"$2,740.00", employee_401k:"$137.00", employer_match:"$102.75", plan_number:"PK-401-2471", status:"Ready" }
+      ]
+    };
+
+    const theadRow = document.getElementById("theadRow");
+    const tbody = document.getElementById("tbody");
+    const rowCount = document.getElementById("rowCount");
+    const drawer = document.getElementById("drawer");
+    const columnsList = document.getElementById("columnsList");
+    const reviewBanner = document.getElementById("reviewBanner");
+    const stickyActions = document.getElementById("stickyActions");
+    const editControls = document.getElementById("editControls");
+    const toolbar = document.getElementById("toolbar");
+    const confirmBackdrop = document.getElementById("confirmBackdrop");
+    const duplicateBox = document.getElementById("duplicateBox");
+    const planNumber = document.getElementById("planNumber");
+
+    function visibleColumns() {
+      return state.columns.filter(c => c.visible);
+    }
+
+    function renderTable() {
+      rowCount.textContent = state.rows.length;
+      theadRow.innerHTML = "";
+      visibleColumns().forEach(col => {
+        const th = document.createElement("th");
+        th.textContent = col.label;
+        theadRow.appendChild(th);
+      });
+
+      tbody.innerHTML = "";
+      state.rows.forEach(row => {
+        const tr = document.createElement("tr");
+        visibleColumns().forEach(col => {
+          const td = document.createElement("td");
+          td.textContent = col.key === "plan_number" ? planNumber.value : (row[col.key] ?? "");
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderColumnsList() {
+      const query = document.getElementById("columnSearch").value.toLowerCase().trim();
+      columnsList.innerHTML = "";
+      state.columns
+        .filter(c => !query || c.label.toLowerCase().includes(query))
+        .forEach((col, idx) => {
+          const row = document.createElement("div");
+          row.className = "col-row";
+
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = col.visible;
+          check.disabled = state.reviewMode;
+          check.addEventListener("change", () => {
+            col.visible = check.checked;
+            renderTable();
+          });
+
+          const label = document.createElement("div");
+          label.textContent = col.label;
+
+          const edit = document.createElement("button");
+          edit.className = "icon-btn";
+          edit.textContent = "✎";
+          edit.disabled = state.reviewMode;
+          edit.addEventListener("click", () => {
+            const next = prompt("Edit column name", col.label);
+            if (next && next.trim()) {
+              col.label = next.trim();
+              renderColumnsList();
+              renderTable();
+            }
+          });
+
+          const drag = document.createElement("button");
+          drag.className = "icon-btn";
+          drag.textContent = "≡";
+          drag.title = "Move up";
+          drag.disabled = state.reviewMode || idx === 0;
+          drag.addEventListener("click", () => {
+            if (idx > 0) {
+              [state.columns[idx-1], state.columns[idx]] = [state.columns[idx], state.columns[idx-1]];
+              renderColumnsList();
+              renderTable();
+            }
+          });
+
+          row.append(check, label, edit, drag);
+          columnsList.appendChild(row);
+        });
+    }
+
+    function setReviewMode(on) {
+      state.reviewMode = on;
+      reviewBanner.classList.toggle("show", on);
+      stickyActions.classList.toggle("show", on);
+      toolbar.classList.toggle("muted-lock", on);
+      if (on) drawer.classList.remove("show");
+      renderColumnsList();
+    }
+
+    function showToast(id) {
+      ["toastSuccess","toastError","toastWarn"].forEach(t => document.getElementById(t).classList.remove("show"));
+      const el = document.getElementById(id);
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2800);
+    }
+
+    document.getElementById("editColumnsBtn").addEventListener("click", () => {
+      if (!state.reviewMode) drawer.classList.add("show");
+    });
+    document.getElementById("closeDrawer").addEventListener("click", () => drawer.classList.remove("show"));
+    document.getElementById("columnSearch").addEventListener("input", renderColumnsList);
+    document.getElementById("toggleAddColumn").addEventListener("click", () => {
+      const area = document.getElementById("addColumnArea");
+      area.style.display = area.style.display === "none" ? "block" : "none";
+    });
+
+    document.getElementById("addColumnBtn").addEventListener("click", () => {
+      const name = document.getElementById("newColumnName").value.trim();
+      const val = document.getElementById("newColumnValue").value.trim() || "0";
+      if (!name) return;
+      const key = "custom_" + Date.now();
+      state.columns.push({ key, label: name, visible: true });
+      state.rows = state.rows.map(r => ({...r, [key]: val}));
+      document.getElementById("newColumnName").value = "";
+      document.getElementById("newColumnValue").value = "0";
+      renderColumnsList();
+      renderTable();
+    });
+
+    document.getElementById("reviewBtn").addEventListener("click", () => setReviewMode(true));
+    document.getElementById("cancelReviewBtn").addEventListener("click", () => setReviewMode(false));
+
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      document.getElementById("modalPlan").textContent = planNumber.value || "-";
+      document.getElementById("modalRows").textContent = state.rows.length;
+      confirmBackdrop.classList.add("show");
+    });
+
+    document.getElementById("modalCancel").addEventListener("click", () => confirmBackdrop.classList.remove("show"));
+    document.getElementById("modalConfirm").addEventListener("click", () => {
+      confirmBackdrop.classList.remove("show");
+      state.sendAttempt += 1;
+      if (state.sendAttempt === 1) {
+        duplicateBox.classList.add("show");
+        showToast("toastWarn");
+      } else if (state.sendAttempt === 2) {
+        duplicateBox.classList.remove("show");
+        showToast("toastSuccess");
+        setReviewMode(false);
+      } else {
+        showToast("toastError");
+      }
+    });
+
+    document.getElementById("resendBtn").addEventListener("click", () => {
+      state.sendAttempt = 1;
+      document.getElementById("modalConfirm").click();
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      showToast("toastSuccess");
+      document.getElementById("toastSuccess").textContent = "Report downloaded.";
+      setTimeout(() => { document.getElementById("toastSuccess").textContent = "Report successfully sent to PayKonnect."; }, 3000);
+    });
+
+    planNumber.addEventListener("input", renderTable);
+
+    renderColumnsList();
+    renderTable();
+  </script>
+</body>
+</html>
