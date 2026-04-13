@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumber – 401(k) Configuration Mockup</title>
+  <style>
+    :root {
+      --bg: #f5f6fa;
+      --panel: #ffffff;
+      --line: #e5e7eb;
+      --line-dark: #d7dbe4;
+      --text: #243041;
+      --muted: #6b7280;
+      --muted-2: #8b95a7;
+      --brand: #2f6df6;
+      --brand-dark: #2457c8;
+      --top: #4a4a4a;
+      --warn-bg: #fff5ea;
+      --shadow: 0 8px 24px rgba(24, 39, 75, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .topbar {
+      height: 54px;
+      background: var(--top);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+
+    .top-left, .top-right, .top-nav { display: flex; align-items: center; }
+    .top-left { gap: 28px; }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #17d48f 0%, #0d8b5d 70%);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.2);
+    }
+    .top-nav {
+      gap: 28px;
+      font-size: 15px;
+      color: rgba(255,255,255,0.92);
+    }
+    .top-nav span::after {
+      content: "▾";
+      margin-left: 8px;
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    .company-pill {
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.95);
+    }
+
+    .page {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 28px 24px 40px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 34px;
+    }
+
+    .sidebar-title {
+      font-size: 48px;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      margin: 0 0 24px;
+      color: #2e3c50;
+    }
+
+    .nav-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #39485d;
+      margin: 16px 0 10px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-item {
+      padding: 11px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #5e6b7d;
+      margin-bottom: 4px;
+    }
+
+    .nav-item.active {
+      background: #eceef2;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .content-header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .content-header h1 {
+      margin: 0;
+      font-size: 38px;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+
+    .content-header p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .btn-row { display: flex; gap: 12px; }
+    .btn {
+      border: 1px solid var(--line-dark);
+      background: white;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn.primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: white;
+    }
+    .btn.primary:hover { background: var(--brand-dark); }
+    .btn.linklike {
+      border: none;
+      background: transparent;
+      padding: 0;
+      color: var(--brand);
+    }
+
+    .block {
+      margin-top: 26px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .block-head {
+      padding: 26px 28px 22px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .block-head h2 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+
+    .block-head p {
+      margin: 8px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .summary {
+      min-width: 360px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #f9fafb;
+      padding: 14px 16px;
+    }
+    .summary h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+      font-size: 13px;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #475467;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #c2c8d1;
+    }
+    .dot.done { background: #1f9d58; }
+
+    .tabs {
+      border-bottom: 1px solid var(--line);
+      padding: 16px 22px 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      border-bottom: none;
+      background: white;
+      color: #526174;
+      padding: 12px 16px;
+      border-radius: 12px 12px 0 0;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: #f3f4f6;
+      color: #18212f;
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 24px;
+    }
+    .tab-panel.active { display: block; }
+
+    .card-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .card-grid-main-side {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: white;
+      overflow: hidden;
+    }
+    .card.soft {
+      background: #fafbfc;
+    }
+    .card-body {
+      padding: 22px;
+    }
+
+    .section-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .section-top h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+    .section-top p {
+      margin: 5px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: #475467;
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    .fields-2, .fields-3, .fields-4 {
+      display: grid;
+      gap: 16px;
+    }
+    .fields-2 { grid-template-columns: 1fr 1fr; }
+    .fields-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .fields-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #475467;
+    }
+    .control, select {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line-dark);
+      background: white;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 14px;
+      color: #18212f;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .box + .box { margin-top: 14px; }
+
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .meta-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .meta-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      background: #cfd5df;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .switch.on { background: var(--brand); }
+    .switch.on::after { left: 23px; }
+
+    .box-sep {
+      border-top: 1px solid var(--line);
+      margin: 14px 0;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .muted-line {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .table {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .thead, .trow {
+      display: grid;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 16px;
+      font-size: 14px;
+    }
+    .thead {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #475467;
+      border-bottom: 1px solid var(--line);
+    }
+    .trow { border-bottom: 1px solid var(--line); }
+    .trow:last-child { border-bottom: none; }
+
+    .thead.comp, .trow.comp { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+    .thead.map, .trow.map { grid-template-columns: 1.4fr 1fr; }
+
+    .flag-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 14px;
+    }
+    .flag-row + .flag-row { margin-top: 12px; }
+
+    .callout {
+      border: 1px solid #eed7b3;
+      background: var(--warn-bg);
+      color: #8b5a14;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .actions-bottom {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 0 24px 24px;
+    }
+
+    @media (max-width: 1180px) {
+      .page { grid-template-columns: 1fr; }
+      .summary { min-width: 0; width: 100%; }
+      .block-head { flex-direction: column; }
+      .card-grid-2, .card-grid-main-side, .fields-4, .fields-3, .fields-2 { grid-template-columns: 1fr; }
+      .thead.comp, .trow.comp, .thead.map, .trow.map, .rules-grid { grid-template-columns: 1fr; }
+      .top-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="top-left">
+      <div class="logo"><div class="logo-mark"></div><div>LUMBER</div></div>
+      <div class="top-nav">
+        <span>Time</span>
+        <span>Pay</span>
+        <span>Scheduler</span>
+        <span>Resources</span>
+        <span>Reports</span>
+        <span>Documents</span>
+        <span>HR</span>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="company-pill">Bryan Construction, Inc.</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <aside>
+      <h1 class="sidebar-title">Settings</h1>
+
+      <div class="nav-section-title">Time Tracking</div>
+
+      <div class="nav-section-title">Payroll <span>▾</span></div>
+      <div class="nav-item active">General</div>
+      <div class="nav-item">Unions</div>
+      <div class="nav-item">Prevailing Wages</div>
+      <div class="nav-item">GL Download</div>
+
+      <div class="nav-section-title">Onboarding <span>▾</span></div>
+      <div class="nav-section-title">Company Info</div>
+      <div class="nav-section-title">Public APIs</div>
+    </aside>
+
+    <main>
+      <div class="content-header">
+        <div>
+          <h1>Payroll</h1>
+          <p>Manage your preferences</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn">Cancel</button>
+          <button class="btn primary">Save</button>
+        </div>
+      </div>
+
+      <section class="block">
+        <div class="block-head">
+          <div>
+            <h2>401(k) Configuration</h2>
+            <p>
+              Configure company-level 401(k) settings used by Lumber for downstream payroll,
+              compliance, and provider data mapping.
+            </p>
+          </div>
+          <div class="summary">
+            <h3>Configuration Summary</h3>
+            <div class="summary-grid">
+              <div class="status"><span class="dot done"></span><span>Plan Overview</span></div>
+              <div class="status"><span class="dot done"></span><span>Contributions</span></div>
+              <div class="status"><span class="dot"></span><span>Compensation Basis</span></div>
+              <div class="status"><span class="dot done"></span><span>Validations & Limits</span></div>
+              <div class="status"><span class="dot"></span><span>Provider Mapping</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="overview">Plan Overview</button>
+          <button class="tab" data-tab="contributions">Contributions</button>
+          <button class="tab" data-tab="compensation">Compensation Basis</button>
+          <button class="tab" data-tab="limits">Validations & Limits</button>
+          <button class="tab" data-tab="provider">Provider Mapping</button>
+        </div>
+
+        <div id="overview" class="tab-panel active">
+          <div class="card">
+            <div class="card-body">
+              <div class="section-top">
+                <div>
+                  <h3>Plan Overview</h3>
+                  <p>Define the parent 401(k) setup for the company.</p>
+                </div>
+                <div class="pill">Required</div>
+              </div>
+
+              <div class="fields-2">
+                <div class="field">
+                  <label>Plan Name</label>
+                  <input class="control" value="Bryan Construction 401(k) Plan" />
+                </div>
+                <div class="field">
+                  <label>Plan Number</label>
+                  <input class="control" value="001" />
+                </div>
+                <div class="field">
+                  <label>Plan Year</label>
+                  <select class="control">
+                    <option selected>Calendar Year</option>
+                    <option>Fiscal Year</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Plan Status</label>
+                  <select class="control">
+                    <option selected>Active</option>
+                    <option>Draft</option>
+                    <option>Terminated</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Effective Start</label>
+                  <input class="control" value="01/01/2026" />
+                </div>
+                <div class="field">
+                  <label>Effective End</label>
+                  <input class="control" placeholder="MM/DD/YYYY" />
+                </div>
+                <div class="field">
+                  <label>Plan Type</label>
+                  <select class="control">
+                    <option selected>Traditional 401(k)</option>
+                    <option>Safe Harbor 401(k)</option>
+                    <option>Auto Enrollment 401(k)</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Provider / Destination</label>
+                  <select class="control">
+                    <option selected>PayKonnect</option>
+                    <option>Guideline</option>
+                    <option>Custom Mapping</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="contributions" class="tab-panel">
+          <div class="card-grid-2">
+            <div class="card">
+              <div class="card-body">
+                <div class="section-top">
+                  <div>
+                    <h3>Employee Contribution Sources</h3>
+                    <p>Configure employee sources inside one 401(k) plan.</p>
+                  </div>
+                  <div class="pill">Required</div>
+                </div>
+
+                <div class="box">
+                  <div class="row-between">
+                    <div>
+                      <div class="meta-title">Pre-tax 401(k)</div>
+                      <div class="meta-sub">Employee elective deferral</div>
+                    </div>
+                    <div class="switch on"></div>
+                  </div>
+                  <div class="box-sep"></div>
+                  <div class="fields-3">
+                    <div class="field">
+                      <label>Contribution Method</label>
+                      <select class="control">
+                        <option selected>Percentage</option>
+                        <option>Amount</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>Default Value</label>
+                      <input class="control" value="5" />
+                    </div>
+                    <div class="field">
+                      <label>Effective Start</label>
+                      <input class="control" value="01/01/2026" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="box">
+                  <div class="row-between">
+                    <div>
+                      <div class="meta-title">Roth 401(k)</div>
+                      <div class="meta-sub">Configured as a source under the same plan</div>
+                    </div>
+                    <div class="switch on"></div>
+                  </div>
+                  <div class="box-sep"></div>
+                  <div class="fields-3">
+                    <div class="field">
+                      <label>Contribution Method</label>
+                      <select class="control">
+                        <option selected>Percentage</option>
+                        <option>Amount</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>Default Value</label>
+                      <input class="control" value="2" />
+                    </div>
+                    <div class="field">
+                      <label>Effective Start</label>
+                      <input class="control" value="01/01/2026" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-body">
+                <div class="section-top">
+                  <div>
+                    <h3>Employer Contribution Rules</h3>
+                    <p>Standard and layered contribution setup.</p>
+                  </div>
+                  <div class="pill">Required</div>
+                </div>
+
+                <div class="fields-2">
+                  <div class="field">
+                    <label>Employer Contribution Type</label>
+                    <select class="control">
+                      <option>Standard Match</option>
+                      <option selected>Layered Match</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Effective Start</label>
+                    <input class="control" value="01/01/2026" />
+                  </div>
+                </div>
+
+                <div class="box" style="margin-top: 16px;">
+                  <div class="meta-title" style="margin-bottom: 14px;">Layered Rules</div>
+                  <div class="rules-grid">
+                    <input class="control" value="100" />
+                    <input class="control" value="3" />
+                    <div class="muted-line">on the first %</div>
+                  </div>
+                  <div class="rules-grid" style="margin-top: 12px;">
+                    <input class="control" value="50" />
+                    <input class="control" value="2" />
+                    <div class="muted-line">on the next %</div>
+                  </div>
+                  <div style="margin-top: 12px;"><button class="btn linklike">+ Add Rule</button></div>
+                </div>
+
+                <div class="callout" style="margin-top: 16px;">
+                  Roth employer contributions remain hidden unless explicitly supported in product scope.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="compensation" class="tab-panel">
+          <div class="card">
+            <div class="card-body">
+              <div class="section-top">
+                <div>
+                  <h3>401(k)-Eligible Compensation</h3>
+                  <p>Map earning codes used for employee and employer calculations.</p>
+                </div>
+                <div class="pill">Required</div>
+              </div>
+
+              <div class="fields-4">
+                <div class="field">
+                  <label>Compensation Definition</label>
+                  <select class="control">
+                    <option>W-2 Wages</option>
+                    <option>415 Compensation</option>
+                    <option>3401(a)</option>
+                    <option selected>Custom Mapping</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Default Employee Basis</label>
+                  <select class="control">
+                    <option selected>Included Unless Excluded</option>
+                    <option>Excluded Unless Included</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Default Employer Basis</label>
+                  <select class="control">
+                    <option selected>Included Unless Excluded</option>
+                    <option>Excluded Unless Included</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Imputed Earnings Handling</label>
+                  <select class="control">
+                    <option selected>Require Explicit Mapping</option>
+                    <option>Include by Default</option>
+                    <option>Exclude by Default</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="table" style="margin-top: 18px;">
+                <div class="thead comp">
+                  <div>Earning Code</div>
+                  <div>Type</div>
+                  <div>Employee Basis</div>
+                  <div>Employer Basis</div>
+                </div>
+                <div class="trow comp">
+                  <div>Regular Wages</div>
+                  <div style="color: var(--muted);">Hourly</div>
+                  <div class="row-between"><span>Included</span><div class="switch on"></div></div>
+                  <div class="row-between"><span>Included</span><div class="switch on"></div></div>
+                </div>
+                <div class="trow comp">
+                  <div>Overtime</div>
+                  <div style="color: var(--muted);">Hourly</div>
+                  <div class="row-between"><span>Included</span><div class="switch on"></div></div>
+                  <div class="row-between"><span>Included</span><div class="switch on"></div></div>
+                </div>
+                <div class="trow comp">
+                  <div>Signing Bonus</div>
+                  <div style="color: var(--muted);">Bonus</div>
+                  <div class="row-between"><span>Excluded</span><div class="switch"></div></div>
+                  <div class="row-between"><span>Excluded</span><div class="switch"></div></div>
+                </div>
+                <div class="trow comp">
+                  <div>Travel Pay</div>
+                  <div style="color: var(--muted);">Allowance</div>
+                  <div class="row-between"><span>Excluded</span><div class="switch"></div></div>
+                  <div class="row-between"><span>Excluded</span><div class="switch"></div></div>
+                </div>
+                <div class="trow comp">
+                  <div>GTL Imputed Income</div>
+                  <div style="color: var(--muted);">Imputed</div>
+                  <div class="row-between"><span>Excluded</span><div class="switch"></div></div>
+                  <div class="row-between"><span>Excluded</span><div class="switch"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="limits" class="tab-panel">
+          <div class="card-grid-2">
+            <div class="card">
+              <div class="card-body">
+                <div class="section-top">
+                  <div>
+                    <h3>Annual Limits</h3>
+                    <p>System-backed references for plan validation.</p>
+                  </div>
+                  <div class="pill">Required</div>
+                </div>
+                <div class="fields-2">
+                  <div class="field">
+                    <label>Plan Year Limit Table</label>
+                    <select class="control">
+                      <option selected>2026 IRS Limits</option>
+                      <option>2025 IRS Limits</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Annual Limit Source</label>
+                    <select class="control">
+                      <option selected>System Managed</option>
+                      <option>Company Override</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="callout" style="margin-top: 16px; border-color: #d9e7ff; background: #f5f9ff; color: #34538a;">
+                  Combined employee sources should validate together before the configuration is saved.
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-body">
+                <div class="section-top">
+                  <div>
+                    <h3>Settings Validation Rules</h3>
+                    <p>Prevent conflicting or incomplete configurations.</p>
+                  </div>
+                  <div class="pill">Required</div>
+                </div>
+
+                <div class="flag-row">
+                  <span>Require at least one active employee contribution source</span>
+                  <div class="switch on"></div>
+                </div>
+                <div class="flag-row">
+                  <span>Prevent layered rules with overlapping ranges</span>
+                  <div class="switch on"></div>
+                </div>
+                <div class="flag-row">
+                  <span>Require provider mapping when plan status is Active</span>
+                  <div class="switch on"></div>
+                </div>
+                <div class="flag-row">
+                  <span>Block save when compensation mapping is incomplete</span>
+                  <div class="switch on"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="provider" class="tab-panel">
+          <div class="card-grid-main-side">
+            <div class="card">
+              <div class="card-body">
+                <div class="section-top">
+                  <div>
+                    <h3>Provider & Export Mapping</h3>
+                    <p>Capture downstream mapping without leaving Company Settings.</p>
+                  </div>
+                  <div class="pill">Required</div>
+                </div>
+
+                <div class="fields-2">
+                  <div class="field">
+                    <label>Downstream Provider</label>
+                    <select class="control">
+                      <option selected>PayKonnect</option>
+                      <option>Guideline</option>
+                      <option>Vestwell</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Company External ID</label>
+                    <input class="control" value="BRY-CON-401K-001" />
+                  </div>
+                  <div class="field">
+                    <label>Employee Identifier Source</label>
+                    <select class="control">
+                      <option selected>Employee ID</option>
+                      <option>SSN + Last 4</option>
+                      <option>External Worker ID</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Contribution Mapping Mode</label>
+                    <select class="control">
+                      <option selected>Source Based</option>
+                      <option>Custom Codes</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="table" style="margin-top: 18px;">
+                  <div class="thead map">
+                    <div>Contribution Source</div>
+                    <div>Export Code</div>
+                  </div>
+                  <div class="trow map">
+                    <div>Pre-tax 401(k)</div>
+                    <div><input class="control" value="EE_PRE" /></div>
+                  </div>
+                  <div class="trow map">
+                    <div>Roth 401(k)</div>
+                    <div><input class="control" value="EE_ROTH" /></div>
+                  </div>
+                  <div class="trow map">
+                    <div>Employer Match</div>
+                    <div><input class="control" value="ER_MATCH" /></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card soft">
+              <div class="card-body">
+                <div class="section-top">
+                  <div>
+                    <h3>Connected Services</h3>
+                    <p>Existing connection entry points can live here as config utilities.</p>
+                  </div>
+                </div>
+
+                <div class="box" style="background: white;">
+                  <div class="meta-title">Guideline</div>
+                  <div class="meta-sub" style="margin-bottom: 14px;">
+                    Launch the connected setup flow if provider-side plan configuration is needed.
+                  </div>
+                  <button class="btn">Connect with Guideline</button>
+                </div>
+
+                <div class="box" style="background: white;">
+                  <div class="meta-title">SimplyInsured</div>
+                  <div class="meta-sub" style="margin-bottom: 14px;">
+                    Shown here for consistency only if payroll settings continue to host connected benefit utilities.
+                  </div>
+                  <button class="btn">Connect with SimplyInsured</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-bottom">
+          <button class="btn">Cancel</button>
+          <button class="btn primary">Save</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
