@@ -1,0 +1,39 @@
+"benefits": [
+    {
+        "benefit_type": "union_fringe_benefit_pre_tax",
+        "description": "Local 26-ED-Dev",
+        "union_code": "26""job_level_code": "AP60",
+        "fringe_code": "EDUH",
+        "employee_contribution_amount": "0.00",
+        "company_contribution_amount": "100.00"
+        fringe_details: [
+            {
+                "benefit_type": "union_fringe_benefit_pre_tax",
+                "description": "Local 26-ED-Dev",
+                "union_code": "26",
+                "job_level_code": "AP60",
+                "fringe_code": "EDUH",
+                "employee_contribution_amount": "0.00",
+                "company_contribution_amount": "20.00",
+                "fringe_metadata": {
+                    "timesheet_id": "c024bd3a-deb4-4b4d-9d96-3dad046abf63",
+                    "date""hours": 8
+                        "project_code""project_name"
+                }
+            },
+            {
+                "benefit_type": "union_fringe_benefit_pre_tax",
+                "description": "Local 26-ED-Dev",
+                "union_code": "26",
+                "job_level_code": "AP60",
+                "fringe_code": "EDUH",
+                "employee_contribution_amount": "0.00",
+                "company_contribution_amount": "0.80",
+                "fringe_metadata": {
+                    "timesheet_id": "c024bd3a-deb4-4b4d-9d96-3dad046abf63",
+                    "date""hours": 8
+                        "project_code""project_name"
+                }
+            }
+        ],
+    }
