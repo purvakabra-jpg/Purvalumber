@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumber – Earning Statement Template Editor</title>
+<style>
+  :root {
+    --teal-900: #0a2e2e;
+    --teal-800: #0a4242;
+    --teal-700: #0d5555;
+    --teal-600: #0e6b6b;
+    --teal-500: #138080;
+    --teal-100: #e6f4f4;
+    --teal-50:  #f0f9f9;
+
+    --blue-600: #2970FF;
+    --blue-50:  #eff4ff;
+
+    --amber-600: #D97706;
+    --amber-50:  #fffbeb;
+    --amber-100: #fef3c7;
+
+    --red-600: #DC2626;
+    --red-50:  #fef2f2;
+
+    --gray-950: #0a0a0a;
+    --gray-900: #111827;
+    --gray-800: #1f2937;
+    --gray-700: #374151;
+    --gray-600: #4b5563;
+    --gray-500: #6b7280;
+    --gray-400: #9ca3af;
+    --gray-300: #d1d5db;
+    --gray-200: #e5e7eb;
+    --gray-100: #f3f4f6;
+    --gray-50:  #f9fafb;
+    --white: #ffffff;
+
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --radius-sm: 4px;
+    --radius: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+    --shadow: 0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.10), 0 4px 6px -4px rgba(0,0,0,.06);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,.12), 0 8px 10px -6px rgba(0,0,0,.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--gray-100);
+    color: var(--gray-900);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── APP SHELL ─────────────────────────────────────────────── */
+  .app-shell { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--teal-800);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .sidebar-logo {
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+
+  .sidebar-logo svg { display: block; }
+
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.4);
+    padding: 8px 20px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    color: rgba(255,255,255,.7);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 0;
+    transition: background .15s, color .15s;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,.12); color: #fff; }
+  .nav-item svg { flex-shrink: 0; opacity: .7; }
+  .nav-item.active svg { opacity: 1; }
+
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+  .topbar-breadcrumb { font-size: 13px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+  .topbar-breadcrumb span { color: var(--gray-900); }
+
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--teal-800);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+  }
+
+  .page-content { flex: 1; padding: 32px; overflow-y: auto; }
+
+  /* ── PAGE STRUCTURE ─────────────────────────────────────────── */
+  .settings-page-header {
+    margin-bottom: 28px;
+  }
+
+  .settings-page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+  }
+
+  .settings-page-header p {
+    font-size: 13px;
+    color: var(--gray-500);
+  }
+
+  .settings-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--gray-200);
+    margin-bottom: 28px;
+  }
+
+  .settings-tab {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color .15s, border-color .15s;
+  }
+
+  .settings-tab:hover { color: var(--gray-700); }
+  .settings-tab.active { color: var(--teal-800); border-color: var(--teal-800); font-weight: 600; }
+
+  /* ── SETTINGS CARD ──────────────────────────────────────────── */
+  .settings-section { margin-bottom: 24px; }
+
+  .settings-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 12px;
+  }
+
+  .settings-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .settings-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .settings-card-row:last-child { border-bottom: none; }
+
+  .settings-card-row.highlight {
+    background: var(--teal-50);
+    border-left: 3px solid var(--teal-600);
+  }
+
+  .settings-row-left { flex: 1; min-width: 0; }
+
+  .settings-row-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 2px;
+  }
+
+  .settings-row-meta {
+    font-size: 12px;
+    color: var(--gray-500);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .meta-dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--gray-400);
+    display: inline-block;
+  }
+
+  .settings-row-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 24px; }
+
+  /* ── BUTTONS ────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s, box-shadow .15s, opacity .15s;
+    white-space: nowrap;
+    outline: none;
+    text-decoration: none;
+  }
+
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn-md { padding: 8px 16px; }
+  .btn-lg { padding: 10px 20px; font-size: 14px; }
+
+  .btn-primary {
+    background: var(--teal-800);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-primary:hover { background: var(--teal-700); }
+
+  .btn-secondary {
+    background: var(--white);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-secondary:hover { background: var(--gray-50); }
+
+  .btn-danger {
+    background: var(--red-600);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-danger:hover { opacity: .9; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--gray-600);
+    border: 1px solid transparent;
+    padding: 8px 14px;
+  }
+  .btn-ghost:hover { background: var(--gray-100); border-color: var(--gray-200); }
+
+  .btn-icon {
+    padding: 7px;
+    border-radius: var(--radius);
+    background: transparent;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-500);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-icon:hover { background: var(--gray-100); color: var(--gray-700); }
+
+  /* ── OVERLAY ────────────────────────────────────────────────── */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(9,18,28,.45);
+    backdrop-filter: blur(2px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  .overlay.visible { opacity: 1; pointer-events: all; }
+
+  /* ── WARNING MODAL ──────────────────────────────────────────── */
+  .warning-modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 460px;
+    max-width: calc(100vw - 40px);
+    transform: translateY(8px) scale(.98);
+    transition: transform .22s cubic-bezier(.34,1.56,.64,1);
+    overflow: hidden;
+  }
+  .overlay.visible .warning-modal { transform: translateY(0) scale(1); }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .modal-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--amber-50);
+    border: 1px solid var(--amber-100);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .modal-icon svg { color: var(--amber-600); }
+
+  .modal-header-text h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 2px;
+  }
+
+  .modal-header-text p { font-size: 13px; color: var(--gray-500); }
+
+  .modal-body { padding: 16px 24px; }
+
+  .alert-box {
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .alert-box.amber {
+    background: var(--amber-50);
+    border: 1px solid #fde68a;
+    color: #92400e;
+  }
+
+  .alert-box.amber strong { color: #78350f; }
+
+  .modal-description {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.65;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-100);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* ── EDITOR MODAL ───────────────────────────────────────────── */
+  .editor-overlay {
+    position: fixed; inset: 0;
+    background: rgba(9,18,28,.5);
+    backdrop-filter: blur(3px);
+    z-index: 200;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+    padding: 20px;
+  }
+  .editor-overlay.visible { opacity: 1; pointer-events: all; }
+
+  .editor-modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 1260px;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(16px);
+    transition: transform .28s cubic-bezier(.34,1.2,.64,1);
+    overflow: hidden;
+  }
+  .editor-overlay.visible .editor-modal { transform: translateY(0); }
+
+  .editor-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--gray-200);
+    flex-shrink: 0;
+    background: var(--white);
+    z-index: 10;
+  }
+
+  .editor-topbar-left { display: flex; align-items: center; gap: 14px; }
+
+  .editor-title-block h3 { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+  .editor-title-block p { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+
+  .editor-topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  .unsaved-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--amber-50);
+    border: 1px solid #fde68a;
+    color: var(--amber-600);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .unsaved-badge.visible { opacity: 1; }
+  .unsaved-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber-600); }
+
+  /* ── EDITOR BODY ────────────────────────────────────────────── */
+  .editor-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* LEFT PANEL */
+  .config-panel {
+    width: 340px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--gray-200);
+    overflow-y: auto;
+    background: var(--gray-50);
+  }
+
+  .config-section {
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0;
+  }
+
+  .config-section-header {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .config-section-header h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--gray-700);
+  }
+
+  .config-chevron {
+    color: var(--gray-400);
+    transition: transform .2s;
+  }
+  .config-section.collapsed .config-chevron { transform: rotate(-90deg); }
+
+  .config-section-body { padding: 4px 20px 16px; }
+  .config-section.collapsed .config-section-body { display: none; }
+
+  .config-group { margin-bottom: 14px; }
+
+  .config-group-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    letter-spacing: .04em;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Checkboxes */
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .check-item:hover { background: var(--gray-100); }
+
+  .check-item input[type="checkbox"] {
+    width: 15px; height: 15px;
+    accent-color: var(--teal-700);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .check-item label {
+    font-size: 13px;
+    color: var(--gray-700);
+    cursor: pointer;
+    flex: 1;
+  }
+
+  /* Logo Controls */
+  .logo-zone {
+    border: 1.5px dashed var(--gray-300);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    background: var(--white);
+    margin-bottom: 10px;
+    transition: border-color .2s, background .2s;
+    cursor: pointer;
+  }
+  .logo-zone:hover { border-color: var(--teal-600); background: var(--teal-50); }
+
+  .logo-zone.has-logo {
+    border-style: solid;
+    border-color: var(--gray-200);
+    padding: 10px;
+  }
+
+  .logo-zone-icon { margin-bottom: 8px; color: var(--gray-400); }
+  .logo-zone-text { font-size: 12px; color: var(--gray-500); }
+  .logo-zone-text strong { color: var(--gray-700); }
+
+  .logo-preview-img {
+    max-height: 48px;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .logo-preview-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .logo-controls { display: flex; gap: 6px; }
+  .logo-controls .btn { flex: 1; font-size: 11px; padding: 6px 8px; }
+
+  /* Drag list */
+  .drag-list { display: flex; flex-direction: column; gap: 4px; }
+
+  .drag-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    cursor: grab;
+    transition: box-shadow .15s, border-color .15s, transform .15s;
+    user-select: none;
+  }
+
+  .drag-item:hover { border-color: var(--gray-300); box-shadow: var(--shadow-sm); }
+  .drag-item.dragging {
+    opacity: .5;
+    box-shadow: var(--shadow-md);
+    border-color: var(--teal-500);
+    transform: scale(1.01);
+    cursor: grabbing;
+  }
+  .drag-item.drag-over { border-color: var(--teal-600); background: var(--teal-50); }
+
+  .drag-handle {
+    color: var(--gray-400);
+    cursor: grab;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .drag-item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-800);
+    flex: 1;
+  }
+
+  .drag-item-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: var(--gray-100);
+    color: var(--gray-500);
+  }
+
+  .fixed-section-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+
+  .fixed-section-notice span { font-size: 12px; color: var(--gray-600); font-style: italic; }
+
+  /* RIGHT PANEL */
+  .preview-panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: #e8eaed;
+  }
+
+  .preview-topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .preview-topbar-left { display: flex; align-items: center; gap: 8px; }
+
+  .preview-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+  }
+
+  .preview-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--blue-50);
+    color: var(--blue-600);
+    border: 1px solid #c7d7fe;
+  }
+
+  .preview-scale-controls { display: flex; align-items: center; gap: 6px; }
+
+  .zoom-btn {
+    width: 28px; height: 28px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-600);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: background .12s, color .12s;
+    flex-shrink: 0;
+  }
+  .zoom-btn:hover { background: var(--gray-100); color: var(--gray-900); }
+  .zoom-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+  .zoom-level {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    min-width: 38px;
+    text-align: center;
+  }
+
+  .zoom-fit-btn {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-500);
+    cursor: pointer;
+    transition: background .12s, color .12s;
+    white-space: nowrap;
+  }
+  .zoom-fit-btn:hover { background: var(--gray-100); color: var(--gray-700); }
+
+  .preview-viewport {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    transition: overflow .1s;
+  }
+  .preview-viewport.zoomed-in {
+    overflow: auto;
+  }
+
+  .preview-scaler {
+    transform-origin: top center;
+    flex-shrink: 0;
+  }
+
+  /* ── EARNING STATEMENT PREVIEW ──────────────────────────────── */
+  .es-doc {
+    background: var(--white);
+    width: 900px;
+    box-shadow: var(--shadow-md);
+    border-radius: 2px;
+    padding: 28px 32px 32px;
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--gray-900);
+    border: 1px solid var(--gray-200);
+  }
+
+  /* ── HEADER: left=logo+title+payinfo | right=employee+company grid ── */
+  .es-header {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .es-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .es-logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+  }
+
+  .es-logo-empty {
+    width: 80px; height: 28px;
+    border: 1.5px dashed var(--gray-300);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray-400);
+    font-size: 9px;
+    gap: 4px;
+  }
+
+  .es-title { font-size: 20px; font-weight: 900; color: var(--gray-900); letter-spacing: -.4px; line-height: 1.1; }
+
+  .es-payinfo {
+    display: flex;
+    gap: 16px;
+    padding: 7px 0 0;
+    border-top: 1.5px solid var(--gray-900);
+    flex-wrap: wrap;
+  }
+
+  .es-payinfo-item label { font-size: 7.5px; color: var(--gray-500); text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: 1px; font-weight: 600; }
+  .es-payinfo-item .val { font-size: 12px; font-weight: 800; color: var(--gray-900); white-space: nowrap; }
+
+  .es-header-right {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 12px;
+    border-left: 1px solid var(--gray-200);
+    margin-left: 20px;
+    padding-left: 20px;
+  }
+
+  .es-info-col {}
+
+  .es-info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 2.5px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 10px;
+    transition: opacity .2s, max-height .2s, padding .2s;
+  }
+
+  .es-info-row:last-child { border-bottom: none; }
+
+  .es-info-label { color: var(--gray-500); flex-shrink: 0; }
+  .es-info-value { color: var(--gray-900); font-weight: 600; text-align: right; }
+
+  .es-info-value.skel {
+    height: 9px;
+    border-radius: 3px;
+    background: var(--gray-200);
+    animation: shimmer 1.8s ease-in-out infinite;
+    min-width: 50px;
+    display: inline-block;
+    align-self: center;
+  }
+
+  .es-info-row.hidden-row {
+    display: none !important;
+  }
+
+  /* Table wrapper - curved, bordered, shadowed */
+  .es-table-wrapper {
+    margin-bottom: 0;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 1px 4px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+    overflow: hidden;
+  }
+
+  /* Section grid gap */
+  .es-section-grid { gap: 10px; margin-bottom: 10px; }
+  .es-section-full { margin-bottom: 10px; }
+
+  /* Draggable sections in preview */
+  @keyframes wiggle {
+    0%,100% { transform: rotate(0deg) translateY(0); }
+    20%      { transform: rotate(-0.5deg) translateY(-1px); }
+    60%      { transform: rotate(0.5deg) translateY(0px); }
+    80%      { transform: rotate(-0.3deg) translateY(-0.5px); }
+  }
+
+  .es-section-draggable {
+    animation: wiggle 0.65s ease-in-out infinite;
+    cursor: grab;
+    transition: box-shadow .15s, outline .15s;
+  }
+  .es-section-draggable:hover {
+    box-shadow: 0 4px 12px rgba(10,66,66,.15), 0 1px 4px rgba(0,0,0,.08);
+    outline: 2px solid var(--teal-500);
+    outline-offset: 1px;
+    animation-play-state: paused;
+  }
+  .es-section-draggable.preview-drag-over {
+    /* removed highlight — line indicator used instead */
+  }
+
+  .drop-line {
+    height: 3px;
+    background: var(--teal-600);
+    border-radius: 2px;
+    margin: 0;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 0 0 3px rgba(13,85,85,.15);
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
+  .drop-line::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--teal-600);
+  }
+  .es-section-draggable.preview-dragging {
+    opacity: .4;
+    cursor: grabbing;
+  }
+
+  .es-table { width: 100%; border-collapse: collapse; }
+
+  .es-table thead tr {
+    background: var(--gray-900);
+    color: var(--white);
+  }
+
+  .es-table thead th {
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .es-table thead th:not(:first-child) { text-align: right; }
+
+  .es-table tbody tr { border-bottom: 1px solid var(--gray-100); }
+  .es-table tbody tr:nth-child(even) { background: var(--gray-50); }
+
+  .es-table tbody td {
+    padding: 6px 10px;
+    font-size: 10px;
+    color: var(--gray-700);
+  }
+  .es-table tbody td:not(:first-child) { text-align: right; }
+
+  .es-table tfoot tr { border-top: 2px solid var(--gray-900); }
+  .es-table tfoot td {
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+  .es-table tfoot td:not(:first-child) { text-align: right; }
+
+  /* Skeleton rows */
+  .skel-cell {
+    height: 9px;
+    border-radius: 3px;
+    background: var(--gray-200);
+    animation: shimmer 1.8s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  .skel-cell.w-full { width: 100%; }
+  .skel-cell.w-80 { width: 80%; }
+  .skel-cell.w-60 { width: 60%; }
+  .skel-cell.w-45 { width: 45%; }
+  .skel-cell.w-40 { width: 40%; }
+
+  @keyframes shimmer {
+    0% { opacity: 1; }
+    50% { opacity: .5; }
+    100% { opacity: 1; }
+  }
+
+  /* Two-column section grid */
+  .es-section-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .es-section-full {
+    margin-bottom: 14px;
+  }
+
+  /* Section label */
+  .es-section-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--gray-900);
+    color: var(--white);
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .es-table-wrapper .es-section-label { border-radius: 0; }
+
+  .section-reordering-pulse {
+    outline: 2px solid var(--teal-600);
+    outline-offset: 1px;
+    transition: outline .2s;
+  }
+
+  /* ── EDITOR FOOTER ──────────────────────────────────────────── */
+  .editor-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: var(--white);
+  }
+
+  .editor-footer-left { font-size: 12px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+  .editor-footer-right { display: flex; gap: 10px; }
+
+  /* ── MISC UTILS ─────────────────────────────────────────────── */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-amber { background: var(--amber-100); color: #92400e; }
+  .tag-blue  { background: var(--blue-50); color: #1d4ed8; }
+  .tag-gray  { background: var(--gray-100); color: var(--gray-600); }
+
+  .divider { height: 1px; background: var(--gray-200); margin: 4px 0; }
+
+  /* Success toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--gray-900);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+    box-shadow: var(--shadow-lg);
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
+    opacity: 0;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast svg { color: #4ade80; }
+
+  /* Scroll styling */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+  /* Responsive: shrink at smaller viewport */
+  @media (max-width: 900px) {
+    .sidebar { width: 52px; }
+    .sidebar-logo svg text { display: none; }
+    .nav-item span { display: none; }
+    .nav-section-label { display: none; }
+    .nav-item { justify-content: center; padding: 10px; }
+    .config-panel { width: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── APP SHELL ──────────────────────────────────────────────────── -->
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="100" height="28" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="14" r="11" stroke="#5eead4" stroke-width="2"/>
+        <path d="M10 10 L14 18 L18 10" stroke="#5eead4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <text x="30" y="19" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="white">LUMBER</text>
+      </svg>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span>Employees</span>
+      </div>
+      <div class="nav-item">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <span>Payroll</span>
+      </div>
+      <div class="nav-item">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg>
+        <span>Timesheets</span>
+      </div>
+      <div class="nav-item">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg>
+        <span>Reports</span>
+      </div>
+      <div class="nav-section-label" style="margin-top:12px">Account</div>
+      <div class="nav-item active">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span>Settings</span>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-breadcrumb">
+        Settings <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        <span>Payroll</span>
+      </div>
+      <div class="topbar-right">
+        <div class="tag tag-green" style="font-size:11px">
+          <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+          All systems operational
+        </div>
+        <div class="avatar">KA</div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <div class="settings-page-header">
+        <h1>Settings</h1>
+        <p>Manage your organization's payroll configuration, templates, and preferences.</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="settings-tabs">
+        <div class="settings-tab">General</div>
+        <div class="settings-tab active">Payroll</div>
+        <div class="settings-tab">Integrations</div>
+        <div class="settings-tab">Notifications</div>
+        <div class="settings-tab">Users & Roles</div>
+        <div class="settings-tab">Billing</div>
+      </div>
+
+      <!-- Settings Section: Payroll Defaults -->
+      <div class="settings-section">
+        <div class="settings-section-title">Payroll Defaults</div>
+        <div class="settings-card">
+          <div class="settings-card-row">
+            <div class="settings-row-left">
+              <div class="settings-row-label">Default Pay Frequency</div>
+              <div class="settings-row-meta"><span>Weekly</span></div>
+            </div>
+            <div class="settings-row-right">
+              <button class="btn btn-secondary btn-sm">Change</button>
+            </div>
+          </div>
+          <div class="settings-card-row">
+            <div class="settings-row-left">
+              <div class="settings-row-label">Pay Period Start Day</div>
+              <div class="settings-row-meta"><span>Saturday</span></div>
+            </div>
+            <div class="settings-row-right">
+              <button class="btn btn-secondary btn-sm">Change</button>
+            </div>
+          </div>
+          <div class="settings-card-row">
+            <div class="settings-row-left">
+              <div class="settings-row-label">Overtime Threshold</div>
+              <div class="settings-row-meta"><span>40 hrs / week · Daily OT at 8 hrs</span></div>
+            </div>
+            <div class="settings-row-right">
+              <button class="btn btn-secondary btn-sm">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Section: Earning Statement Template ← NEW -->
+      <div class="settings-section">
+        <div class="settings-section-title">Documents & Templates</div>
+        <div class="settings-card">
+
+          <!-- Other template row -->
+          <div class="settings-card-row">
+            <div class="settings-row-left">
+              <div class="settings-row-label">Direct Deposit Authorization Form</div>
+              <div class="settings-row-meta">
+                <span>Default template</span>
+                <span class="meta-dot"></span>
+                <span>Last modified Mar 12, 2025</span>
+              </div>
+            </div>
+            <div class="settings-row-right">
+              <span class="tag tag-gray">Default</span>
+              <button class="btn btn-secondary btn-sm">Edit</button>
+            </div>
+          </div>
+
+          <!-- EARNING STATEMENT TEMPLATE ROW → highlighted -->
+          <div class="settings-card-row highlight">
+            <div class="settings-row-left">
+              <div class="settings-row-label" style="display:flex;align-items:center;gap:8px">
+                Earning Statement Template
+                <span class="tag tag-blue">Configurable</span>
+              </div>
+              <div class="settings-row-meta" style="margin-top:4px">
+                <span>Standard Template v2</span>
+                <span class="meta-dot"></span>
+                <span>Last modified <strong style="color:var(--gray-700)">Jun 18, 2025</strong></span>
+                <span class="meta-dot"></span>
+                <span>by <strong style="color:var(--gray-700)">Kuresh A.</strong></span>
+              </div>
+            </div>
+            <div class="settings-row-right">
+              <span class="tag tag-green">
+                <svg width="7" height="7" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+                Active
+              </span>
+              <button class="btn btn-secondary btn-sm" onclick="showWarning()">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit Template
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-card-row">
+            <div class="settings-row-left">
+              <div class="settings-row-label">T4 Summary Report</div>
+              <div class="settings-row-meta">
+                <span>System template · Read-only</span>
+              </div>
+            </div>
+            <div class="settings-row-right">
+              <span class="tag tag-gray">System</span>
+              <button class="btn btn-secondary btn-sm" disabled style="opacity:.5;cursor:not-allowed">View</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Deductions section placeholder -->
+      <div class="settings-section">
+        <div class="settings-section-title">Tax & Compliance</div>
+        <div class="settings-card">
+          <div class="settings-card-row">
+            <div class="settings-row-left">
+              <div class="settings-row-label">Federal Tax Filing Status</div>
+              <div class="settings-row-meta"><span>Oregon · Quarterly</span></div>
+            </div>
+            <div class="settings-row-right">
+              <button class="btn btn-secondary btn-sm">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main -->
+</div><!-- /app-shell -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     WARNING MODAL
+══════════════════════════════════════════════════════════════════════ -->
+<div class="overlay" id="warningOverlay">
+  <div class="warning-modal">
+    <div class="modal-header">
+      <div class="modal-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="modal-header-text">
+        <h2>Edit Earning Statement Template</h2>
+        <p>Changes affect all future earning statements</p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box amber">
+        <strong>Before you continue —</strong><br>
+        Changes made to this template will affect future earning statements generated for your organization. Previously generated earning statements will not be modified.
+      </div>
+      <p class="modal-description">
+        Please review your changes carefully before saving. You can preview how the template looks before applying it. Compliance-critical fields like earnings calculations cannot be removed.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-md" onclick="hideWarning()">Cancel</button>
+      <button class="btn btn-primary btn-md" onclick="openEditor()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Continue Editing
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════
+     EDITOR MODAL
+══════════════════════════════════════════════════════════════════════ -->
+<div class="editor-overlay" id="editorOverlay">
+  <div class="editor-modal">
+
+    <!-- Editor Topbar -->
+    <div class="editor-topbar">
+      <div class="editor-topbar-left">
+        <div class="editor-title-block">
+          <h3>Earning Statement Template</h3>
+          <p>Standard Template v2 · Editing for BigCat</p>
+        </div>
+        <div class="unsaved-badge" id="unsavedBadge">
+          <span class="unsaved-dot"></span> Unsaved changes
+        </div>
+      </div>
+      <button class="btn btn-icon" onclick="closeEditor()" title="Close editor">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Editor Body -->
+    <div class="editor-body">
+
+      <!-- LEFT: Config Panel -->
+      <div class="config-panel" id="configPanel">
+
+        <!-- Section: Header Info -->
+        <div class="config-section" id="sec-header">
+          <div class="config-section-header" onclick="toggleSection('sec-header')">
+            <h4>Header Information</h4>
+            <svg class="config-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="config-section-body">
+
+            <div class="config-group">
+              <div class="config-group-label">Employee Information</div>
+              <div class="check-item"><input type="checkbox" id="cb-empname" checked onchange="toggleField('emp-name',this.checked)"><label for="cb-empname">Employee Name</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-empid" checked onchange="toggleField('emp-id',this.checked)"><label for="cb-empid">Employee ID</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-ssn" onchange="toggleField('emp-ssn',this.checked)"><label for="cb-ssn">SSN</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-phone" checked onchange="toggleField('emp-phone',this.checked)"><label for="cb-phone">Phone</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-addr" checked onchange="toggleField('emp-addr',this.checked)"><label for="cb-addr">Address</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-emptype" checked onchange="toggleField('emp-type',this.checked)"><label for="cb-emptype">Employment Type</label></div>
+            </div>
+
+            <div class="config-group">
+              <div class="config-group-label">Company Information</div>
+              <div class="check-item"><input type="checkbox" id="cb-coname" checked onchange="toggleField('co-name',this.checked)"><label for="cb-coname">Company Name</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-cophone" checked onchange="toggleField('co-phone',this.checked)"><label for="cb-cophone">Phone</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-coemail" checked onchange="toggleField('co-email',this.checked)"><label for="cb-coemail">Email</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-coaddr" checked onchange="toggleField('co-addr',this.checked)"><label for="cb-coaddr">Address</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-checkno" checked onchange="toggleField('check-no',this.checked)"><label for="cb-checkno">Check / Direct Deposit #</label></div>
+            </div>
+
+            <div class="config-group">
+              <div class="config-group-label">Payroll Information</div>
+              <div class="check-item"><input type="checkbox" id="cb-payperiod" checked onchange="toggleField('pay-period',this.checked)"><label for="cb-payperiod">Pay Period</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-payday" checked onchange="toggleField('pay-day',this.checked)"><label for="cb-payday">Pay Date</label></div>
+              <div class="check-item"><input type="checkbox" id="cb-netpay" checked onchange="toggleField('net-pay',this.checked)"><label for="cb-netpay">Net Pay</label></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section: Logo -->
+        <div class="config-section" id="sec-logo">
+          <div class="config-section-header" onclick="toggleSection('sec-logo')">
+            <h4>Logo</h4>
+            <svg class="config-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="config-section-body">
+            <div id="logo-upload-zone" class="logo-zone" onclick="simulateLogoUpload()" style="display:none">
+              <div class="logo-zone-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+              </div>
+              <div class="logo-zone-text"><strong>Click to upload logo</strong><br>PNG, SVG, JPG · Max 2 MB</div>
+            </div>
+            <div id="logo-has-zone" class="logo-zone has-logo">
+              <div class="logo-preview-placeholder">
+                <svg width="20" height="20" viewBox="0 0 30 10" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="4" stroke="#0d5555" stroke-width="1.5"/><path d="M3 3.5L5 7L7 3.5" stroke="#0d5555" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><text x="11" y="8" font-family="Inter" font-size="7" font-weight="700" fill="#0a4242">LUMBER</text></svg>
+                <span style="font-size:11px;color:var(--gray-600)">lumber-logo.svg</span>
+              </div>
+            </div>
+            <div class="logo-controls" id="logo-controls-add" style="display:none">
+              <button class="btn btn-secondary" style="flex:1" onclick="simulateLogoUpload()">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload Logo
+              </button>
+            </div>
+            <div class="logo-controls" id="logo-controls-replace">
+              <button class="btn btn-secondary" style="flex:1" onclick="simulateLogoUpload()">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Replace Logo
+              </button>
+              <button class="btn btn-secondary" style="flex:1;color:var(--red-600);border-color:var(--red-600)" onclick="removeLogo()">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                Remove Logo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Section Layout -->
+        <div class="config-section" id="sec-layout">
+          <div class="config-section-header" onclick="toggleSection('sec-layout')">
+            <h4>Section Layout</h4>
+            <svg class="config-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="config-section-body">
+            <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;line-height:1.5">
+              Drag sections to reorder how they appear on the earning statement. All sections are required.
+            </div>
+
+            <!-- Fixed -->
+            <div class="fixed-section-notice">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              <span>Earnings table · Fixed position, always first</span>
+            </div>
+
+            <!-- Draggable sections list -->
+            <div class="drag-list" id="dragList">
+              <div class="drag-item" draggable="true" data-section="employee-taxes">
+                <div class="drag-handle">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </div>
+                <div class="drag-item-name">Employee Taxes Withheld</div>
+                <div class="drag-item-badge">Required</div>
+              </div>
+              <div class="drag-item" draggable="true" data-section="employee-deductions">
+                <div class="drag-handle">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </div>
+                <div class="drag-item-name">Employee Deductions</div>
+                <div class="drag-item-badge">Required</div>
+              </div>
+              <div class="drag-item" draggable="true" data-section="employer-contributions">
+                <div class="drag-handle">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </div>
+                <div class="drag-item-name">Employer Contributions</div>
+                <div class="drag-item-badge">Required</div>
+              </div>
+              <div class="drag-item" draggable="true" data-section="employer-taxes">
+                <div class="drag-handle">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </div>
+                <div class="drag-item-name">Employer Taxes Paid</div>
+                <div class="drag-item-badge">Required</div>
+              </div>
+              <div class="drag-item" draggable="true" data-section="time-off">
+                <div class="drag-handle">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </div>
+                <div class="drag-item-name">Time Off</div>
+                <div class="drag-item-badge">Required</div>
+              </div>
+              <div class="drag-item" draggable="true" data-section="summary">
+                <div class="drag-handle">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </div>
+                <div class="drag-item-name">Summary</div>
+                <div class="drag-item-badge">Required</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /config-panel -->
+
+      <!-- RIGHT: Preview Panel -->
+      <div class="preview-panel">
+        <div class="preview-topbar">
+          <div class="preview-topbar-left">
+            <span class="preview-label">Live Preview</span>
+            <span class="preview-badge">Sample data · Not real payroll</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="font-size:11px;color:var(--gray-400);display:flex;align-items:center;gap:5px">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Updates instantly
+            </div>
+            <div style="width:1px;height:16px;background:var(--gray-200)"></div>
+            <div class="preview-scale-controls">
+              <button class="zoom-btn" id="zoomOut" onclick="zoom(-1)" title="Zoom out">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <span class="zoom-level" id="zoomLevel">Fit</span>
+              <button class="zoom-btn" id="zoomIn" onclick="zoom(1)" title="Zoom in">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <button class="zoom-fit-btn" onclick="resetZoom()" title="Fit to window">Fit</button>
+            </div>
+          </div>
+        </div>
+        <div class="preview-viewport" id="previewViewport">
+          <div class="preview-scaler" id="previewScaler">
+          <!-- EARNING STATEMENT DOCUMENT -->
+          <div class="es-doc" id="esDoc">
+
+            <!-- Header: LEFT = logo + title + payinfo | RIGHT = emp + co grid -->
+            <div class="es-header">
+
+              <!-- Left column -->
+              <div class="es-header-left">
+                <div class="es-logo" id="es-logo-area">
+                  <div id="es-logo-lumber" style="display:block">
+                    <svg width="96" height="28" viewBox="0 0 96 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="14" cy="14" r="11" stroke="#138080" stroke-width="2"/>
+                      <path d="M10 10 L14 19 L18 10" stroke="#138080" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                      <text x="30" y="19" font-family="Inter, sans-serif" font-size="13" font-weight="800" fill="#0a4242">LUMBER</text>
+                    </svg>
+                  </div>
+                </div>
+                <div class="es-title">Earnings Statement</div>
+                <div class="es-payinfo">
+                  <div class="es-payinfo-item" id="es-pay-period">
+                    <label>Pay Period</label>
+                    <div class="val">XXX – XXX</div>
+                  </div>
+                  <div class="es-payinfo-item" id="es-pay-day">
+                    <label>Pay Day</label>
+                    <div class="val">XXX</div>
+                  </div>
+                  <div class="es-payinfo-item" id="es-net-pay">
+                    <label>Net Pay</label>
+                    <div class="val">XXX</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right column: employee + company info grid -->
+              <div class="es-header-right">
+                <div class="es-info-col">
+                  <div class="es-info-row" id="es-emp-name">
+                    <span class="es-info-label">Employee</span>
+                    <span class="es-info-value"><strong>Jane Doe</strong></span>
+                  </div>
+                  <div class="es-info-row" id="es-emp-id">
+                    <span class="es-info-label">Employee ID</span>
+                    <span class="es-info-value skel" style="width:44px"></span>
+                  </div>
+                  <div class="es-info-row hidden-row" id="es-emp-ssn">
+                    <span class="es-info-label">SSN</span>
+                    <span class="es-info-value skel" style="width:55px"></span>
+                  </div>
+                  <div class="es-info-row" id="es-emp-phone">
+                    <span class="es-info-label">Phone</span>
+                    <span class="es-info-value skel" style="width:70px"></span>
+                  </div>
+                  <div class="es-info-row" id="es-emp-addr">
+                    <span class="es-info-label">Address</span>
+                    <span class="es-info-value skel" style="width:80px"></span>
+                  </div>
+                  <div class="es-info-row" id="es-emp-type">
+                    <span class="es-info-label">Employment Type</span>
+                    <span class="es-info-value">Hourly</span>
+                  </div>
+                </div>
+                <div class="es-info-col">
+                  <div class="es-info-row" id="es-co-name">
+                    <span class="es-info-label">Company</span>
+                    <span class="es-info-value"><strong>BigCat</strong></span>
+                  </div>
+                  <div class="es-info-row" id="es-co-phone">
+                    <span class="es-info-label">Phone Number</span>
+                    <span class="es-info-value skel" style="width:65px"></span>
+                  </div>
+                  <div class="es-info-row" id="es-co-email">
+                    <span class="es-info-label">Email</span>
+                    <span class="es-info-value skel" style="width:72px"></span>
+                  </div>
+                  <div class="es-info-row" id="es-co-addr">
+                    <span class="es-info-label">Address</span>
+                    <span class="es-info-value skel" style="width:80px"></span>
+                  </div>
+                  <div class="es-info-row" id="es-check-no">
+                    <span class="es-info-label">Check / Direct Deposit #</span>
+                    <span class="es-info-value skel" style="width:35px"></span>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /es-header -->
+
+            <!-- Fixed: Earnings Table -->
+            <div style="margin-bottom:10px">
+            <div class="es-table-wrapper">
+              <div class="es-section-label">
+                Earnings
+                <span style="font-size:9px;opacity:.6;font-weight:400">Fixed position</span>
+              </div>
+              <table class="es-table">
+                <thead><tr><th>Description</th><th>Taxable</th><th>Hours</th><th>Hourly Rate</th><th>Pay Period Gross Pay</th></tr></thead>
+                <tbody>
+                  <tr><td><span class="skel-cell w-60"></span></td><td><span class="skel-cell w-45"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-45"></span></td></tr>
+                  <tr><td><span class="skel-cell w-80"></span></td><td><span class="skel-cell w-45"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-45"></span></td></tr>
+                  <tr><td><span class="skel-cell w-80"></span></td><td><span class="skel-cell w-45"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-45"></span></td></tr>
+                  <tr><td><span class="skel-cell w-60"></span></td><td><span class="skel-cell w-45"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-40"></span></td><td><span class="skel-cell w-45"></span></td></tr>
+                </tbody>
+                <tfoot><tr><td>Total</td><td></td><td><span class="skel-cell w-40"></span></td><td></td><td><span class="skel-cell w-45"></span></td></tr></tfoot>
+              </table>
+            </div>
+            </div>
+
+            <!-- Reorderable sections container -->
+            <div id="es-sections">
+              <!-- Sections are injected by JS -->
+            </div>
+
+          </div><!-- /es-doc -->
+          </div><!-- /preview-scaler -->
+        </div><!-- /preview-viewport -->
+      </div><!-- /preview-panel -->
+
+    </div><!-- /editor-body -->
+
+    <!-- Editor Footer -->
+    <div class="editor-footer">
+      <div class="editor-footer-left">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Previously generated statements are unaffected by any changes.
+      </div>
+      <div class="editor-footer-right">
+        <button class="btn btn-ghost btn-sm" onclick="closeEditor()">Cancel</button>
+        <button class="btn btn-primary btn-md" onclick="saveTemplate()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+          Save Template
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /editor-modal -->
+</div><!-- /editor-overlay -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  Template saved successfully
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────
+  let hasChanges = false;
+  let logoState = 'has'; // 'none' | 'has'
+
+  const sectionData = {
+    'employee-taxes': {
+      label: 'Employee Taxes Withheld',
+      cols: ['Description', 'Pay Period Amount', 'YTD Amount'],
+      rows: 4
+    },
+    'employee-deductions': {
+      label: 'Employee Deductions',
+      cols: ['Description', 'Pay Period Amount', 'YTD Amount'],
+      rows: 4
+    },
+    'employer-contributions': {
+      label: 'Employer Contributions',
+      cols: ['Description', 'Pay Period Amount', 'YTD Amount'],
+      rows: 4
+    },
+    'employer-taxes': {
+      label: 'Employer Taxes Paid',
+      cols: ['Description', 'Pay Period Amount', 'YTD Amount'],
+      rows: 4
+    },
+    'time-off': {
+      label: 'Time Off',
+      cols: ['Description', 'Earned This Pay Period', 'Used This Pay Period', 'Adjusted This Pay Period', 'Total Remaining'],
+      rows: 4
+    },
+    'summary': {
+      label: 'Summary',
+      cols: ['Description', 'Hours Pay Period', 'Pay Period Amount', 'YTD Hours', 'YTD Amount'],
+      rows: 4
+    }
+  };
+
+  // Track current section order
+  let sectionOrder = ['employee-taxes','employee-deductions','employer-contributions','employer-taxes','time-off','summary'];
+
+  // ── Init ────────────────────────────────────────────────────────
+  function renderPreviewSections() {
+    const container = document.getElementById('es-sections');
+    container.innerHTML = '';
+
+    // Always pair every two sections into a 2-column grid
+    let i = 0;
+    while (i < sectionOrder.length) {
+      const secId = sectionOrder[i];
+      const d = sectionData[secId];
+      const nextId = sectionOrder[i + 1];
+      const nextD = nextId ? sectionData[nextId] : null;
+
+      if (nextD) {
+        const grid = document.createElement('div');
+        grid.className = 'es-section-grid';
+        grid.innerHTML = buildSection(secId, d, false) + buildSection(nextId, nextD, false);
+        container.appendChild(grid);
+        i += 2;
+      } else {
+        const grid = document.createElement('div');
+        grid.className = 'es-section-grid';
+        grid.innerHTML = buildSection(secId, d, false);
+        container.appendChild(grid);
+        i++;
+      }
+    }
+  }
+
+  function buildSection(id, d, isFixed) {
+    const skeletonRows = Array.from({length: d.rows}, (_, ri) => {
+      const tds = d.cols.map((_, ci) => {
+        const w = ci === 0 ? ['w-80','w-60','w-full','w-80'][ri % 4] : ['w-60','w-80','w-45'][ri % 3];
+        return `<td><span class="skel-cell ${w}"></span></td>`;
+      }).join('');
+      return `<tr>${tds}</tr>`;
+    }).join('');
+
+    const thds = d.cols.map(c => `<th>${c}</th>`).join('');
+    const skeletonFoot = d.cols.map((_, ci) => {
+      return ci === 0 ? `<td>Total</td>` : `<td><span class="skel-cell w-60"></span></td>`;
+    }).join('');
+
+    const draggable = !isFixed ? `draggable="true" data-preview-section="${id}"` : '';
+    const wiggle    = !isFixed ? `es-section-draggable` : '';
+    const dragIcon  = !isFixed ? `<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="opacity:.5;flex-shrink:0"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>` : '';
+
+    return `
+      <div class="es-table-wrapper es-section-block ${wiggle}" ${draggable} data-section-id="${id}">
+        <div class="es-section-label">${dragIcon}${d.label}${isFixed ? '<span style="font-size:9px;opacity:.6;font-weight:400">Fixed position</span>' : ''}</div>
+        <table class="es-table">
+          <thead><tr>${thds}</tr></thead>
+          <tbody>${skeletonRows}</tbody>
+          <tfoot><tr>${skeletonFoot}</tr></tfoot>
+        </table>
+      </div>`;
+  }
+
+  // ── Warning modal ───────────────────────────────────────────────
+  function showWarning() {
+    document.getElementById('warningOverlay').classList.add('visible');
+  }
+  function hideWarning() {
+    document.getElementById('warningOverlay').classList.remove('visible');
+  }
+  function openEditor() {
+    hideWarning();
+    document.getElementById('editorOverlay').classList.add('visible');
+    renderPreviewSections();
+    initDragAndDrop();
+    initPreviewDragDrop();
+    setTimeout(rescalePreview, 50);
+  }
+  function closeEditor() {
+    document.getElementById('editorOverlay').classList.remove('visible');
+    hasChanges = false;
+    document.getElementById('unsavedBadge').classList.remove('visible');
+  }
+
+  document.getElementById('warningOverlay').addEventListener('click', function(e) {
+    if (e.target === this) hideWarning();
+  });
+
+  // ── Toggle config section collapse ─────────────────────────────
+  function toggleSection(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+  }
+
+  // ── Field visibility toggle ─────────────────────────────────────
+  // All preview element IDs follow the pattern: 'es-' + fieldId
+  // pay-period → es-pay-period, emp-name → es-emp-name, etc.
+  function toggleField(fieldId, visible) {
+    markChanged();
+    const elId = 'es-' + fieldId;
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (visible) {
+      el.classList.remove('hidden-row');
+    } else {
+      el.classList.add('hidden-row');
+    }
+    rescalePreview();
+  }
+
+  // ── Logo controls ───────────────────────────────────────────────
+  function simulateLogoUpload() {
+    logoState = 'has';
+    document.getElementById('logo-upload-zone').style.display = 'none';
+    document.getElementById('logo-has-zone').style.display = '';
+    document.getElementById('logo-controls-add').style.display = 'none';
+    document.getElementById('logo-controls-replace').style.display = 'flex';
+
+    // Restore logo area in preview
+    const logoArea = document.getElementById('es-logo-area');
+    logoArea.style.display = '';
+    document.getElementById('es-logo-lumber').style.display = 'block';
+
+    markChanged();
+    rescalePreview();
+  }
+
+  function removeLogo() {
+    logoState = 'none';
+    document.getElementById('logo-upload-zone').style.display = '';
+    document.getElementById('logo-has-zone').style.display = 'none';
+    document.getElementById('logo-controls-add').style.display = 'flex';
+    document.getElementById('logo-controls-replace').style.display = 'none';
+
+    // Hide the entire logo area in preview — title + payinfo remain visible
+    document.getElementById('es-logo-area').style.display = 'none';
+
+    markChanged();
+    rescalePreview();
+  }
+
+  // ── Unsaved state ───────────────────────────────────────────────
+  function markChanged() {
+    if (!hasChanges) {
+      hasChanges = true;
+      document.getElementById('unsavedBadge').classList.add('visible');
+    }
+  }
+
+  // ── Save template ───────────────────────────────────────────────
+  function saveTemplate() {
+    hasChanges = false;
+    document.getElementById('unsavedBadge').classList.remove('visible');
+    closeEditor();
+    showToast();
+  }
+
+  function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── Zoom state ─────────────────────────────────────────────────
+  let fitScale   = 1;   // computed fit-to-window scale
+  let zoomSteps  = 0;   // steps away from fit (negative = smaller, positive = larger)
+  const ZOOM_STEP = 0.15;
+  const ZOOM_MAX  = 4;  // steps above fit
+  const ZOOM_MIN  = -2; // steps below fit (rarely needed)
+
+  function computeFitScale() {
+    const viewport = document.getElementById('previewViewport');
+    const doc      = document.getElementById('esDoc');
+    if (!viewport || !doc) return 1;
+    const availW = viewport.clientWidth  - 40;
+    const availH = viewport.clientHeight - 40;
+    const scaleW = availW / doc.offsetWidth;
+    const scaleH = availH / doc.offsetHeight;
+    return Math.min(scaleW, scaleH, 1);
+  }
+
+  function applyScale(scale) {
+    const scaler   = document.getElementById('previewScaler');
+    const doc      = document.getElementById('esDoc');
+    const viewport = document.getElementById('previewViewport');
+    if (!scaler || !doc) return;
+
+    scaler.style.transform = `scale(${scale})`;
+    // Set scaler height so the viewport scrolls correctly when zoomed in
+    scaler.style.width  = doc.offsetWidth  + 'px';
+    scaler.style.height = doc.offsetHeight + 'px';
+
+    // Enable/disable scroll
+    const isZoomedIn = scale > fitScale + 0.01;
+    viewport.classList.toggle('zoomed-in', isZoomedIn);
+
+    // Update zoom label
+    const pct = Math.round(scale * 100);
+    const isAtFit = Math.abs(scale - fitScale) < 0.01;
+    document.getElementById('zoomLevel').textContent = isAtFit ? 'Fit' : pct + '%';
+
+    // Update button states
+    document.getElementById('zoomOut').disabled = zoomSteps <= ZOOM_MIN;
+    document.getElementById('zoomIn').disabled  = zoomSteps >= ZOOM_MAX;
+  }
+
+  function rescalePreview() {
+    fitScale = computeFitScale();
+    zoomSteps = 0;
+    applyScale(0.97);
+    // Show 97% in label and enable scroll
+    document.getElementById('zoomLevel').textContent = '97%';
+    document.getElementById('previewViewport').classList.add('zoomed-in');
+  }
+
+  function zoom(direction) {
+    const newSteps = zoomSteps + direction;
+    if (newSteps < ZOOM_MIN || newSteps > ZOOM_MAX) return;
+    zoomSteps = newSteps;
+    const scale = fitScale + zoomSteps * ZOOM_STEP;
+    applyScale(Math.max(0.1, scale));
+  }
+
+  function resetZoom() {
+    zoomSteps = 0;
+    rescalePreview();
+  }
+
+  // ── Drag and Drop ───────────────────────────────────────────────
+  let dragSrcEl = null;
+  let dragSrcIndex = null;
+
+  function initDragAndDrop() {
+    const list = document.getElementById('dragList');
+    const items = list.querySelectorAll('.drag-item');
+
+    items.forEach((item, idx) => {
+      item.addEventListener('dragstart', handleDragStart);
+      item.addEventListener('dragover', handleDragOver);
+      item.addEventListener('dragleave', handleDragLeave);
+      item.addEventListener('drop', handleDrop);
+      item.addEventListener('dragend', handleDragEnd);
+    });
+  }
+
+  function handleDragStart(e) {
+    dragSrcEl = this;
+    dragSrcIndex = getItemIndex(this);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragSrcIndex);
+    setTimeout(() => this.classList.add('dragging'), 0);
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    this.classList.add('drag-over');
+  }
+
+  function handleDragLeave() {
+    this.classList.remove('drag-over');
+  }
+
+  function handleDrop(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.classList.remove('drag-over');
+
+    if (dragSrcEl !== this) {
+      const list = document.getElementById('dragList');
+      const items = [...list.querySelectorAll('.drag-item')];
+      const srcIdx = items.indexOf(dragSrcEl);
+      const tgtIdx = items.indexOf(this);
+
+      if (srcIdx < tgtIdx) {
+        list.insertBefore(dragSrcEl, this.nextSibling);
+      } else {
+        list.insertBefore(dragSrcEl, this);
+      }
+
+      // Rebuild section order from drag list
+      const newOrder = [...list.querySelectorAll('.drag-item')].map(el => el.dataset.section);
+      sectionOrder = newOrder;
+
+      // Animate and re-render preview
+      markChanged();
+      flashSections();
+      renderPreviewSections();
+      setTimeout(rescalePreview, 30);
+    }
+  }
+
+  function handleDragEnd() {
+    this.classList.remove('dragging');
+    document.querySelectorAll('.drag-item').forEach(i => i.classList.remove('drag-over', 'dragging'));
+  }
+
+  function getItemIndex(el) {
+    const list = document.getElementById('dragList');
+    return [...list.querySelectorAll('.drag-item')].indexOf(el);
+  }
+
+  function flashSections() {
+    // Brief highlight to show reorder happened
+    const blocks = document.querySelectorAll('.es-section-block');
+    blocks.forEach(b => {
+      b.classList.add('section-reordering-pulse');
+      setTimeout(() => b.classList.remove('section-reordering-pulse'), 500);
+    });
+  }
+
+  window.addEventListener('resize', rescalePreview);
+
+  // ── Preview drag-and-drop with line indicator ──────────────────
+  let previewDragSrc  = null;
+  let previewDropTarget = null;
+  let previewDropBefore = true;
+  let dropLineEl = null;
+
+  function removeDropLine() {
+    if (dropLineEl && dropLineEl.parentNode) dropLineEl.parentNode.removeChild(dropLineEl);
+    dropLineEl = null;
+  }
+
+  function showDropLine(referenceEl, before) {
+    removeDropLine();
+    dropLineEl = document.createElement('div');
+    dropLineEl.className = 'drop-line';
+    // The reference element lives inside a grid cell or section-grid
+    // We insert the line at the grid level so it spans correctly
+    const grid = referenceEl.closest('.es-section-grid, .es-section-full');
+    const container = document.getElementById('es-sections');
+    if (!grid || !container) return;
+    if (before) {
+      container.insertBefore(dropLineEl, grid);
+    } else {
+      const next = grid.nextSibling;
+      if (next) container.insertBefore(dropLineEl, next);
+      else container.appendChild(dropLineEl);
+    }
+  }
+
+  function initPreviewDragDrop() {
+    document.addEventListener('dragstart', function(e) {
+      const el = e.target.closest('[data-preview-section]');
+      if (!el) return;
+      previewDragSrc = el;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => el.classList.add('preview-dragging'), 0);
+    });
+
+    document.addEventListener('dragover', function(e) {
+      const el = e.target.closest('[data-preview-section]');
+      if (!el || el === previewDragSrc) { return; }
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+
+      const rect = el.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      const before = e.clientY < midY;
+
+      // Only update DOM if something changed
+      if (el !== previewDropTarget || before !== previewDropBefore) {
+        previewDropTarget = el;
+        previewDropBefore = before;
+        showDropLine(el, before);
+      }
+    });
+
+    document.addEventListener('dragleave', function(e) {
+      // Only remove line if leaving the preview area entirely
+      const inPreview = e.relatedTarget && e.relatedTarget.closest('#es-sections');
+      if (!inPreview) {
+        removeDropLine();
+        previewDropTarget = null;
+      }
+    });
+
+    document.addEventListener('drop', function(e) {
+      const target = e.target.closest('[data-preview-section]');
+      removeDropLine();
+      if (!target || !previewDragSrc || target === previewDragSrc) return;
+      e.preventDefault();
+
+      const srcId  = previewDragSrc.dataset.previewSection;
+      const tgtId  = target.dataset.previewSection;
+      let si = sectionOrder.indexOf(srcId);
+      let ti = sectionOrder.indexOf(tgtId);
+      if (si === -1 || ti === -1) return;
+
+      const rect   = target.getBoundingClientRect();
+      const before = e.clientY < rect.top + rect.height / 2;
+
+      // Remove src from its position
+      sectionOrder.splice(si, 1);
+      // Recalculate target index after removal
+      ti = sectionOrder.indexOf(tgtId);
+      const insertAt = before ? ti : ti + 1;
+      sectionOrder.splice(insertAt, 0, srcId);
+
+      syncDragList();
+      markChanged();
+      renderPreviewSections();
+      setTimeout(rescalePreview, 30);
+      previewDropTarget = null;
+    });
+
+    document.addEventListener('dragend', function() {
+      removeDropLine();
+      document.querySelectorAll('.preview-dragging').forEach(x => x.classList.remove('preview-dragging'));
+      previewDragSrc  = null;
+      previewDropTarget = null;
+    });
+  }
+
+  function syncDragList() {
+    const list = document.getElementById('dragList');
+    const items = [...list.querySelectorAll('.drag-item')];
+    // Re-sort DOM items to match sectionOrder
+    sectionOrder.forEach(id => {
+      const item = items.find(el => el.dataset.section === id);
+      if (item) list.appendChild(item);
+    });
+  }
+
+  // Close editor on overlay click
+  document.getElementById('editorOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+      if (hasChanges) {
+        if (confirm('You have unsaved changes. Discard them?')) closeEditor();
+      } else {
+        closeEditor();
+      }
+    }
+  });
+</script>
+</body>
+</html>
